@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숨겨진 글자를 찾아요! - 6학년 1학기 1단원 과학 (지학사)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --paper: #FBF6E4;
+      --paper-dark: #F0E8C8;
+      --ink: #2C2416;
+      --baking-soda: #F8F5E8;
+      --turmeric: #E8B53D;
+      --turmeric-light: #F0C95C;
+      --reaction: #8B3A1E;
+      --reaction-light: #C04828;
+      --wood: #8B5A2B;
+      --wood-light: #B8854F;
+      --shadow: 0 4px 12px rgba(0,0,0,0.15);
+      --jihaksa-red: #E63946;
+      --jihaksa-yellow: #FFD93D;
+    }
+
+    body {
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(232, 181, 61, 0.1), transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(192, 72, 40, 0.08), transparent 50%),
+        linear-gradient(135deg, #FFF4D6 0%, #FBF6E4 100%);
+      min-height: 100vh;
+      color: var(--ink);
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+    .screen { display: none; animation: fadeIn 0.4s ease-out; }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 지학사 로고 (SVG로 재현) ===== */
+    .jihaksa-logo {
+      display: inline-block;
+      vertical-align: middle;
+      width: 60px;
+      height: 60px;
+    }
+
+    .jihaksa-logo-small {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* ===== 메인 메뉴 ===== */
+    .menu-screen { text-align: center; padding-top: 40px; }
+
+    .logo-icon {
+      font-size: 80px;
+      margin-bottom: 12px;
+      animation: bounce 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    .title {
+      font-size: 44px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-shadow: 3px 3px 0 var(--turmeric);
+    }
+
+    .subtitle { 
+      font-size: 16px; 
+      color: var(--wood); 
+      margin-bottom: 20px; 
+      font-weight: 500; 
+    }
+
+    .subtitle-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .menu-card {
+      background: var(--paper);
+      border: 3px solid var(--wood);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border: 2px dashed var(--turmeric);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .menu-card h2 { font-size: 22px; margin-bottom: 16px; }
+    .menu-card p { font-size: 15px; line-height: 1.8; color: var(--wood); margin-bottom: 24px; text-align: left; }
+
+    .btn {
+      padding: 14px 32px;
+      font-size: 17px;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-primary { background: var(--turmeric); color: var(--ink); border: 3px solid var(--wood); }
+    .btn-primary:hover:not(:disabled) { background: var(--turmeric-light); }
+    .btn-secondary { background: var(--paper); color: var(--ink); border: 3px solid var(--wood-light); }
+    .btn-secondary:hover { background: var(--paper-dark); }
+
+    /* ===== 닉네임 입력 ===== */
+    .nickname-card {
+      background: var(--paper);
+      border: 3px solid var(--wood);
+      border-radius: 20px;
+      padding: 40px 32px;
+      max-width: 500px;
+      margin: 40px auto 0;
+      box-shadow: var(--shadow);
+    }
+
+    .nickname-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .nickname-label {
+      font-size: 18px;
+      font-weight: 700;
+      min-width: 80px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nickname-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .icon-p1 { background: var(--turmeric); color: var(--ink); border: 2px solid var(--wood); }
+    .icon-p2 { background: var(--reaction-light); border: 2px solid var(--reaction); }
+
+    .nickname-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 3px solid var(--wood-light);
+      border-radius: 12px;
+      font-size: 18px;
+      font-family: inherit;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .nickname-input:focus {
+      outline: none;
+      border-color: var(--wood);
+      box-shadow: 0 0 0 3px rgba(232, 181, 61, 0.3);
+    }
+
+    /* ===== 선공 결정 애니메이션 ===== */
+    .draw-screen {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .draw-coin {
+      width: 120px;
+      height: 120px;
+      margin: 30px auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--turmeric), var(--turmeric-light));
+      border: 6px solid var(--wood);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      font-weight: 800;
+      color: white;
+      animation: coinSpin 1.5s ease-in-out;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    @keyframes coinSpin {
+      0% { transform: rotateY(0deg) scale(0.3); opacity: 0; }
+      50% { transform: rotateY(1080deg) scale(1.1); opacity: 1; }
+      100% { transform: rotateY(1440deg) scale(1); }
+    }
+
+    .draw-result {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 24px 0 12px;
+      color: var(--reaction);
+      opacity: 0;
+      animation: drawResult 0.6s 1.3s forwards;
+    }
+
+    @keyframes drawResult {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .draw-subtitle {
+      font-size: 16px;
+      color: var(--wood);
+      opacity: 0;
+      animation: drawResult 0.6s 1.6s forwards;
+    }
+
+    /* ===== 게임 헤더 ===== */
+    .game-header {
+      background: var(--paper);
+      border: 3px solid var(--wood);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .player-badge { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; }
+
+    .player-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--turmeric);
+      border: 3px solid var(--wood);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .player-icon.player2 { background: var(--reaction-light); color: white; }
+
+    .turn-indicator {
+      padding: 8px 14px;
+      background: var(--turmeric);
+      border: 2px solid var(--wood);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .board-wrapper { display: flex; justify-content: center; margin-bottom: 16px; }
+
+    .board-container {
+      position: relative;
+      background: var(--paper);
+      border: 3px solid var(--wood);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .board-container::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 1px dashed var(--wood-light);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .board-title { text-align: center; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+
+    #boardSvg, #battleBoardSvg { display: block; }
+
+    .cell-rect {
+      fill: var(--baking-soda);
+      stroke: var(--wood-light);
+      stroke-width: 1.5;
+      transition: fill 0.15s;
+    }
+
+    .cell-rect:hover { fill: rgba(232, 181, 61, 0.25); }
+
+    .cell-rect.selected {
+      fill: #FFF4D6;
+      stroke: var(--wood);
+      stroke-width: 2;
+    }
+
+    /* 유효하지 않은 선택 (붉은 테두리 경고) */
+    .cell-rect.invalid {
+      fill: rgba(192, 72, 40, 0.15);
+      stroke: var(--reaction-light);
+      stroke-width: 2;
+      stroke-dasharray: 4 3;
+    }
+
+    .cell-rect.placed {
+      fill: #FFF4D6;
+      stroke: var(--wood);
+      stroke-width: 2;
+    }
+
+    .cell-rect.turmeric { fill: var(--turmeric); stroke: var(--wood); }
+    .cell-rect.reacted { fill: var(--reaction-light); stroke: var(--reaction); }
+
+    .stroke-piece {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      pointer-events: none;
+    }
+
+    .stroke-piece.hidden-state {
+      stroke: rgba(70, 40, 15, 0.9);
+      stroke-width: 8;
+    }
+
+    .stroke-piece.revealed-state {
+      stroke: #FFF;
+      stroke-width: 7;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+    }
+
+    .stroke-piece.placing-state {
+      stroke: rgba(184, 133, 79, 0.85);
+      stroke-width: 8;
+    }
+
+    .instruction {
+      background: var(--turmeric);
+      border: 3px solid var(--wood);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .instruction-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .instruction-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+
+    .instruction.warning {
+      background: var(--reaction-light);
+      color: white;
+      animation: warningPulse 0.4s ease-out;
+    }
+
+    @keyframes warningPulse {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .instruction.bonus {
+      background: var(--reaction-light);
+      color: white;
+      animation: warningPulse 0.5s ease-out;
+    }
+
+    .letter-guide {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .letter-chip {
+      padding: 10px 14px;
+      background: var(--paper-dark);
+      border: 2px solid var(--wood-light);
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+    }
+
+    .letter-chip:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .letter-chip.active { background: var(--turmeric); border-color: var(--wood); transform: scale(1.05); }
+    .letter-chip.done { background: #4A8B3A; color: white; border-color: #2A5520; }
+
+    .letter-chip-count { font-size: 11px; font-weight: 500; margin-top: 2px; }
+    .letter-preview-mini { display: block; margin: 6px auto 0; width: 40px; height: 40px; }
+
+    .info-panel {
+      background: var(--paper);
+      border: 3px solid var(--wood);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+    .info-label { font-weight: 600; color: var(--wood); font-size: 14px; }
+    .info-value { font-weight: 700; font-size: 16px; }
+
+    .button-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+
+    .switch-content { text-align: center; padding: 60px 20px; }
+    .switch-content .emoji-big { font-size: 100px; margin-bottom: 20px; }
+    .switch-content h2 { font-size: 28px; margin-bottom: 16px; }
+    .switch-content p { font-size: 16px; color: var(--wood); line-height: 1.7; margin-bottom: 30px; }
+
+    /* 가림막 (글자 숨기기 단계용) */
+    .privacy-shield {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, var(--turmeric), var(--turmeric) 20px, var(--wood) 20px, var(--wood) 40px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      flex-direction: column;
+      gap: 30px;
+      animation: fadeIn 0.3s;
+    }
+
+    .privacy-shield.active { display: flex; }
+
+    .privacy-shield-card {
+      background: var(--paper);
+      border: 4px solid var(--wood);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      max-width: 400px;
+      margin: 20px;
+    }
+
+    /* ===== 상단 반투명 턴 알림 ===== */
+    .turn-toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(44, 36, 22, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      pointer-events: none;
+      min-width: 280px;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .turn-toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .turn-toast.fading {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+    }
+
+    .turn-toast-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .turn-toast-subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* ===== 결과 화면 (박진감) ===== */
+    .result-content { 
+      text-align: center; 
+      padding-top: 20px; 
+      position: relative;
+    }
+
+    /* 폭죽 효과 */
+    .firework {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fireworkBurst 1.5s ease-out forwards;
+    }
+
+    @keyframes fireworkBurst {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+
+    .trophy-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .trophy {
+      font-size: 120px;
+      animation: trophyEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-block;
+    }
+
+    @keyframes trophyEntrance {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      60% { transform: scale(1.3) rotate(20deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    .trophy-shine {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 30px;
+      animation: shinePulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes shinePulse {
+      0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(0.8); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    }
+
+    .winner-name {
+      font-size: 56px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--turmeric), var(--reaction));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      animation: winnerSlam 0.6s 0.5s both cubic-bezier(0.34, 1.56, 0.64, 1);
+      letter-spacing: -1px;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    @keyframes winnerSlam {
+      0% { transform: scale(3) rotate(-5deg); opacity: 0; filter: blur(10px); }
+      60% { transform: scale(0.95) rotate(1deg); opacity: 1; filter: blur(0); }
+      100% { transform: scale(1) rotate(0); opacity: 1; filter: blur(0); }
+    }
+
+    .winner-label {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--wood);
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 1s both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-stats-card {
+      animation: fadeUp 0.6s 1.3s both;
+    }
+
+    .result-message {
+      animation: fadeUp 0.6s 1.6s both;
+    }
+
+    /* 출판사 푸터 */
+    .publisher-footer {
+      text-align: center;
+      padding: 30px 20px 20px;
+      color: var(--wood);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* 커서 */
+    .brush-cursor {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g transform='rotate(-30 20 20)'><rect x='17' y='4' width='6' height='14' rx='1.5' fill='%238B5A2B' stroke='%23000' stroke-width='0.5'/><rect x='16' y='18' width='8' height='3' fill='%23B8860B' stroke='%23000' stroke-width='0.5'/><path d='M 16 21 Q 16 30 18 36 L 22 36 Q 24 30 24 21 Z' fill='%232C2416' stroke='%23000' stroke-width='0.5'/></g></svg>") 4 36, crosshair;
+    }
+
+    .sponge-cursor {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><ellipse cx='20' cy='22' rx='14' ry='10' fill='%23E8B53D' stroke='%238B5A2B' stroke-width='1.5'/><circle cx='14' cy='20' r='1.5' fill='%23B8860B'/><circle cx='24' cy='18' r='1.2' fill='%23B8860B'/><circle cx='20' cy='25' r='1' fill='%23B8860B'/><circle cx='27' cy='24' r='1' fill='%23B8860B'/><circle cx='13' cy='25' r='0.8' fill='%23B8860B'/></svg>") 20 22, crosshair;
+    }
+
+    @media (max-width: 768px) {
+      .title { font-size: 32px; }
+      .game-header { padding: 12px; }
+      .container { padding: 12px; }
+      #boardSvg, #battleBoardSvg { width: 100%; height: auto; max-width: 480px; }
+      .winner-name { font-size: 40px; }
+      .nickname-row { flex-direction: column; align-items: stretch; }
+      .nickname-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="privacy-shield" id="privacyShield">
+    <div class="privacy-shield-card">
+      <div style="font-size:80px;">🙈</div>
+      <h2 style="font-size:24px; margin:16px 0;">잠깐!</h2>
+      <p style="color:var(--wood); margin-bottom:24px; line-height:1.6;">
+        상대방이 볼 수 없도록<br>화면을 가린 후 다음 학생에게 넘겨주세요.
+      </p>
+      <button class="btn btn-primary" onclick="hidePrivacyShield()">준비됐어요 →</button>
+    </div>
+  </div>
+
+  <!-- 상단 반투명 토스트 -->
+  <div class="turn-toast" id="turnToast">
+    <div class="turn-toast-title" id="toastTitle">학생 2의 차례입니다</div>
+    <div class="turn-toast-subtitle" id="toastSubtitle">강황 스폰지로 찍어보세요</div>
+  </div>
+
+  <div class="container">
+    
+    <!-- ====== 메인 메뉴 ====== -->
+    <div id="menuScreen" class="screen active menu-screen">
+      <div class="logo-icon">🧪</div>
+      <h1 class="title">숨겨진 글자를 찾아요!</h1>
+      <div class="subtitle-line">
+        <svg class="jihaksa-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 노란 말풍선 -->
+          <path d="M 50 8 
+                   C 25 8, 8 22, 8 42 
+                   C 8 60, 22 73, 42 75 
+                   L 35 92 
+                   L 56 76 
+                   C 78 74, 92 60, 92 42 
+                   C 92 22, 75 8, 50 8 Z" 
+                fill="#FFD93D" stroke="#2C2416" stroke-width="2.5" stroke-linejoin="round"/>
+          <!-- 지학사 텍스트 -->
+          <text x="50" y="52" 
+                font-family="'Pretendard', 'Malgun Gothic', sans-serif" 
+                font-size="26" 
+                font-weight="900" 
+                fill="#E63946" 
+                text-anchor="middle"
+                style="font-style: italic;">지학사</text>
+        </svg>
+        <span style="font-size:16px; color:var(--wood); font-weight:500;">6학년 1학기 1단원 과학</span>
+      </div>
+      
+      <div class="menu-card">
+        <h2>📖 게임 방법</h2>
+        <p>
+          <strong>① 글자 숨기기</strong> 🖌️<br>
+          베이킹소다 붓으로 격자판을 클릭해서 <strong>ㅈ, ㅅ, ㅇ</strong>을 숨겨요.<br>
+          각 글자마다 <strong>4칸</strong>을 클릭하면 글자가 자동으로 그려져요.<br><br>
+          
+          <strong>② 강황 스폰지로 공격</strong> 🧽<br>
+          상대 격자판을 한 칸씩 찍어요.<br>
+          • 빈 칸 → <strong style="color:#B8860B">노랗게</strong> → 턴 교체<br>
+          • 글자 칸 → <strong style="color:var(--reaction)">붉게</strong> → <strong>한 번 더!</strong><br><br>
+          
+          <strong>③ 승리</strong> 🏆<br>
+          상대의 모든 글자 칸을 먼저 찾으면 승리!
+        </p>
+        <button class="btn btn-primary" onclick="goToNickname()">시작하기 🚀</button>
+      </div>
+    </div>
+
+    <!-- ====== 닉네임 입력 ====== -->
+    <div id="nicknameScreen" class="screen">
+      <div style="text-align:center; padding-top:30px;">
+        <div style="font-size:60px; margin-bottom:8px;">👫</div>
+        <h2 style="font-size:28px; margin-bottom:8px;">두 친구의 닉네임을 알려주세요</h2>
+        <p style="color:var(--wood); font-size:14px;">
+          입력하지 않아도 괜찮아요. 선공은 자동으로 정해집니다!
+        </p>
+        
+        <div class="nickname-card">
+          <div class="nickname-row">
+            <div class="nickname-label">
+              <div class="nickname-icon icon-p1">1</div>
+              친구 1
+            </div>
+            <input type="text" class="nickname-input" id="nickname1" 
+                   placeholder="닉네임" maxlength="10" autocomplete="off">
+          </div>
+          <div class="nickname-row">
+            <div class="nickname-label">
+              <div class="nickname-icon icon-p2">2</div>
+              친구 2
+            </div>
+            <input type="text" class="nickname-input" id="nickname2" 
+                   placeholder="닉네임" maxlength="10" autocomplete="off">
+          </div>
+          
+          <div class="button-row" style="margin-top:24px;">
+            <button class="btn btn-secondary" onclick="goHome()">← 뒤로</button>
+            <button class="btn btn-secondary" onclick="skipNicknames()">건너뛰기</button>
+            <button class="btn btn-primary" onclick="confirmNicknames()">선공 결정! 🎲</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 선공 결정 화면 ====== -->
+    <div id="drawScreen" class="screen">
+      <div class="draw-screen">
+        <h2 style="font-size:28px; margin-bottom:8px;">선공을 결정합니다</h2>
+        <p style="color:var(--wood);">두구두구두구...</p>
+        
+        <div class="draw-coin" id="drawCoin">?</div>
+        
+        <div class="draw-result" id="drawResultText">학생 1 선공!</div>
+        <div class="draw-subtitle" id="drawSubtitle">학생 1부터 글자를 숨겨주세요</div>
+        
+        <div style="margin-top:30px; opacity:0; animation: drawResult 0.6s 2s forwards;">
+          <button class="btn btn-primary" onclick="startHidePhase()">시작하기 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 글자 숨기기 ====== -->
+    <div id="hideScreen" class="screen">
+      <div class="game-header">
+        <div class="player-badge">
+          <div class="player-icon" id="hidePlayerIcon">1</div>
+          <span id="hidePlayerName">학생 1 — 글자 숨기기</span>
+        </div>
+        <div class="turn-indicator">🖌️ 붓으로 클릭</div>
+      </div>
+
+      <div class="instruction" id="hideInstructionBox">
+        <div class="instruction-title" id="hideInstrTitle">🖌️ 'ㅈ'을 숨길 위치를 클릭하세요</div>
+        <div class="instruction-text" id="hideInstrText">
+          격자판에서 <strong>4칸</strong>을 클릭하면 그 위치에 'ㅈ'이 자동으로 그려져요.
+        </div>
+      </div>
+
+      <div class="board-wrapper">
+        <div class="board-container">
+          <div class="board-title">내 격자판 (다른 학생이 보지 못하게!)</div>
+          <svg id="boardSvg" width="480" height="480" viewBox="0 0 480 480"></svg>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div style="text-align:center; font-size:14px; color:var(--wood); margin-bottom:8px;">
+          <strong>그릴 글자:</strong>
+        </div>
+        <div class="letter-guide" id="letterGuide"></div>
+        <div class="button-row">
+          <button class="btn btn-secondary" onclick="cancelCurrentLetter()">현재 글자 취소</button>
+          <button class="btn btn-primary" onclick="finishHiding()" id="finishHideBtn" disabled>준비 완료 ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 학생 전환 (글자 숨기기) ====== -->
+    <div id="switchScreen" class="screen">
+      <div class="switch-content">
+        <div class="emoji-big">🔄</div>
+        <h2 id="switchTitle">다음 친구의 차례입니다</h2>
+        <p id="switchText">
+          앞 친구의 격자판이 안 보이게 화면을 가렸나요?<br>
+          이제 다음 친구가 글자를 숨길 차례입니다.
+        </p>
+        <button class="btn btn-primary" onclick="confirmSwitch()">시작 →</button>
+      </div>
+    </div>
+
+    <!-- ====== 대결 시작 ====== -->
+    <div id="startBattleScreen" class="screen">
+      <div class="switch-content">
+        <div class="emoji-big">⚔️</div>
+        <h2>대결 준비 완료!</h2>
+        <p id="startBattleText">
+          두 친구 모두 글자를 숨겼습니다.<br>
+          이제 강황 스폰지로 상대 격자판을 찍어 글자를 찾아보세요!
+        </p>
+        <button class="btn btn-primary" onclick="startBattle()">대결 시작 ⚔️</button>
+      </div>
+    </div>
+
+    <!-- ====== 대결 ====== -->
+    <div id="battleScreen" class="screen">
+      <div class="game-header">
+        <div class="player-badge">
+          <div class="player-icon" id="currentPlayerIcon">1</div>
+          <span id="currentPlayerName">학생 1의 차례</span>
+        </div>
+        <div class="turn-indicator">🧽 스폰지로 찍기</div>
+      </div>
+
+      <div class="instruction" id="battleInstructionBox">
+        <div class="instruction-text" id="battleInstruction">
+          🧽 강황 스폰지로 상대 격자판의 칸을 클릭하세요!<br>
+          글자 일부를 발견하면 <strong>한 번 더</strong> 찍을 수 있어요.
+        </div>
+      </div>
+
+      <div class="board-wrapper">
+        <div class="board-container">
+          <div class="board-title" id="opponentBoardTitle">상대 격자판 (공격!)</div>
+          <svg id="battleBoardSvg" width="480" height="480" viewBox="0 0 480 480"></svg>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-row">
+          <span class="info-label">⏱️ 시간</span>
+          <span class="info-value" id="gameTimer">00:00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">🎯 찾은 칸</span>
+          <span class="info-value" id="findProgress">0 / 0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">📊 내 클릭 수</span>
+          <span class="info-value" id="attackCount">0회</span>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="confirmEndTurn()">중간 종료</button>
+      </div>
+    </div>
+
+    <!-- ====== 결과 (박진감!) ====== -->
+    <div id="resultScreen" class="screen">
+      <div class="result-content" id="resultContent">
+        <div class="trophy-container">
+          <span class="trophy">🏆</span>
+          <span class="trophy-shine">✨</span>
+        </div>
+        <div class="winner-name" id="winnerName">학생 1</div>
+        <div class="winner-label">🎉 승리! 🎉</div>
+        
+        <div class="info-panel result-stats-card" style="max-width:500px; margin:24px auto;">
+          <div class="info-row">
+            <span class="info-label">⏱️ 소요 시간</span>
+            <span class="info-value" id="resultTime">--</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">🎯 <span id="resultName1">학생 1</span> 클릭</span>
+            <span class="info-value" id="result1Clicks">--</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">🎯 <span id="resultName2">학생 2</span> 클릭</span>
+            <span class="info-value" id="result2Clicks">--</span>
+          </div>
+        </div>
+
+        <div class="menu-card result-message" style="margin-top:24px;">
+          <h2>🤔 생각해 봅시다</h2>
+          <p style="text-align:center;">
+            <strong>왜 어떤 칸은 노랗게, 어떤 칸은 붉게 변했을까요?</strong><br><br>
+            베이킹소다는 <strong>염기성</strong>이고, 강황은 <strong>지시약</strong>이에요.<br>
+            염기성 물질과 만나면 색이 변한답니다!<br><br>
+            <span style="display:inline-flex; align-items:center; gap:8px; color:var(--wood); font-size:14px;">
+              <svg class="jihaksa-logo jihaksa-logo-small" viewBox="0 0 100 100">
+                <path d="M 50 8 C 25 8, 8 22, 8 42 C 8 60, 22 73, 42 75 L 35 92 L 56 76 C 78 74, 92 60, 92 42 C 92 22, 75 8, 50 8 Z" 
+                      fill="#FFD93D" stroke="#2C2416" stroke-width="2.5" stroke-linejoin="round"/>
+                <text x="50" y="52" font-family="'Pretendard', sans-serif" font-size="26" font-weight="900" 
+                      fill="#E63946" text-anchor="middle" style="font-style: italic;">지학사</text>
+              </svg>
+              <strong>6학년 1학기 1단원 과학</strong>에서 더 자세히!
+            </span>
+          </p>
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="resetGame()">다시 시작 🔄</button>
+            <button class="btn btn-secondary" onclick="goHome()">메인 메뉴</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 푸터 -->
+  <div class="publisher-footer">
+    <svg class="jihaksa-logo jihaksa-logo-small" viewBox="0 0 100 100" style="width:28px; height:28px;">
+      <path d="M 50 8 C 25 8, 8 22, 8 42 C 8 60, 22 73, 42 75 L 35 92 L 56 76 C 78 74, 92 60, 92 42 C 92 22, 75 8, 50 8 Z" 
+            fill="#FFD93D" stroke="#2C2416" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="50" y="52" font-family="'Pretendard', sans-serif" font-size="26" font-weight="900" 
+            fill="#E63946" text-anchor="middle" style="font-style: italic;">지학사</text>
+    </svg>
+    <span>6학년 1학기 1단원 과학 · 숨겨진 글자를 찾아요!</span>
+  </div>
+
+  <script>
+    const GRID_SIZE = 8;
+    const CELL_SIZE = 60;
+    
+    const LETTER_SPECS = {
+      'ㅈ': { cells: 4 },
+      'ㅅ': { cells: 4 },
+      'ㅇ': { cells: 4 }
+    };
+    const LETTERS = ['ㅈ', 'ㅅ', 'ㅇ'];
+
+    let state = {
+      nicknames: { 1: '학생 1', 2: '학생 2' },
+      firstPlayer: 1,  // 선공
+      
+      currentPlayer: 1,
+      currentLetter: 'ㅈ',
+      placingCells: [],
+      
+      drawings: {
+        1: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null },
+        2: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null }
+      },
+      
+      battleStarted: false,
+      currentTurn: 1,
+      attackedCells: { 1: new Set(), 2: new Set() },
+      foundLetters: { 1: new Set(), 2: new Set() },
+      attackCount: { 1: 0, 2: 0 },
+      
+      startTime: null,
+      timerInterval: null,
+      
+      winner: null,
+    };
+
+    // ===== 글자별 허용 가능한 패턴 정의 (자연스러운 것만) =====
+    // 각 패턴은 [row_offset, col_offset] 좌표의 배열
+    const LETTER_PATTERNS = {
+      'ㅈ': [
+        // 가로 일렬 4칸 (가장 단순하고 자연스러운 ㅈ)
+        [[0,0],[0,1],[0,2],[0,3]],
+        // 2x2 정사각형 (정사각형 ㅈ)
+        [[0,0],[0,1],[1,0],[1,1]],
+        // 윗줄 가로 3 + 아래 가운데 (전형적인 ㅈ 모양)
+        [[0,0],[0,1],[0,2],[1,1]],
+        // 윗줄 가로 3 + 아래 왼쪽
+        [[0,0],[0,1],[0,2],[1,0]],
+        // 윗줄 가로 3 + 아래 오른쪽
+        [[0,0],[0,1],[0,2],[1,2]],
+      ],
+      'ㅅ': [
+        // 가로 일렬 4칸 (작게 누운 ㅅ)
+        [[0,0],[0,1],[0,2],[0,3]],
+        // 큰 V자: 위 1 + 한칸 띄고 양옆 아래 2 (가장 큰 ㅅ)
+        [[0,1],[1,0],[1,2],[2,1]],
+        // V자: 위 1 + 아래 양옆 2 + 위에서 아래로 길어진 형태
+        // 윗꼭지 + 양쪽 다리 길어짐 (전형적 ㅅ)
+        [[0,1],[1,0],[1,2],[2,0]],   // 왼쪽 다리 길게
+        [[0,1],[1,0],[1,2],[2,2]],   // 오른쪽 다리 길게
+        // 윗줄 가운데 1 + 가운데 가로 2 + 아래 가운데 1 (마름모)
+        [[0,1],[1,0],[1,2],[1,1]],   // V자 + 중심
+        // 윗줄 1 + 아래 가로 3 (안정적인 ㅅ)
+        [[0,1],[1,0],[1,1],[1,2]],
+        // 윗줄 1 + 아래 한칸 띈 양쪽 2 + 더 아래 가운데 1
+        // (∧ 모양에 받침)
+      ],
+      'ㅇ': [
+        // 2x2 정사각형 (가장 자연스러운 원)
+        [[0,0],[0,1],[1,0],[1,1]],
+        // 마름모 (위, 아래, 좌, 우 — 좀 더 둥근 원)
+        [[0,1],[1,0],[1,2],[2,1]],
+      ],
+    };
+
+    // 패턴 정규화: 항상 (0,0)부터 시작하도록 이동
+    function normalizePattern(pattern) {
+      const minR = Math.min(...pattern.map(p => p[0]));
+      const minC = Math.min(...pattern.map(p => p[1]));
+      return pattern.map(p => [p[0] - minR, p[1] - minC])
+                    .sort((a,b) => a[0]*100+a[1] - (b[0]*100+b[1]));
+    }
+
+    // 셀 인덱스 배열을 정규화된 상대 패턴으로 변환
+    function cellsToPattern(cells) {
+      const coords = cells.map(idx => [Math.floor(idx / GRID_SIZE), idx % GRID_SIZE]);
+      return normalizePattern(coords);
+    }
+
+    // 두 패턴이 같은지 비교
+    function patternsEqual(p1, p2) {
+      if (p1.length !== p2.length) return false;
+      for (let i = 0; i < p1.length; i++) {
+        if (p1[i][0] !== p2[i][0] || p1[i][1] !== p2[i][1]) return false;
+      }
+      return true;
+    }
+
+    // 부분 셀 집합이 어떤 패턴의 부분집합인지 확인 → 호환 가능한 패턴들 반환
+    function findCompatiblePatterns(letter, selectedCells) {
+      const allPatterns = LETTER_PATTERNS[letter].map(p => normalizePattern(p));
+      
+      if (selectedCells.length === 0) {
+        // 빈 상태: 모든 패턴을 격자판의 모든 위치로 옮긴 결과 반환
+        const result = [];
+        for (const pattern of allPatterns) {
+          const maxR = Math.max(...pattern.map(p => p[0]));
+          const maxC = Math.max(...pattern.map(p => p[1]));
+          for (let baseR = 0; baseR + maxR < GRID_SIZE; baseR++) {
+            for (let baseC = 0; baseC + maxC < GRID_SIZE; baseC++) {
+              const patternCellsAbs = pattern.map(p => (baseR + p[0]) * GRID_SIZE + (baseC + p[1]));
+              result.push({ patternCells: patternCellsAbs, pattern });
+            }
+          }
+        }
+        return result;
+      }
+      
+      const selectedSet = new Set(selectedCells);
+      const compatible = [];
+      
+      for (const pattern of allPatterns) {
+        const maxR = Math.max(...pattern.map(p => p[0]));
+        const maxC = Math.max(...pattern.map(p => p[1]));
+        
+        // 격자판 위 모든 가능한 시작 위치
+        for (let baseR = 0; baseR + maxR < GRID_SIZE; baseR++) {
+          for (let baseC = 0; baseC + maxC < GRID_SIZE; baseC++) {
+            const patternCellsAbs = pattern.map(p => (baseR + p[0]) * GRID_SIZE + (baseC + p[1]));
+            const patternSet = new Set(patternCellsAbs);
+            
+            // 모든 선택된 셀이 이 패턴 안에 포함되는지
+            const allIncluded = selectedCells.every(c => patternSet.has(c));
+            if (allIncluded) {
+              compatible.push({ patternCells: patternCellsAbs, pattern });
+            }
+          }
+        }
+      }
+      
+      return compatible;
+    }
+
+    // 현재 선택 상태에서 클릭 가능한 다음 칸들 계산
+    function getAllowedNextCells(letter, selectedCells) {
+      const compatible = findCompatiblePatterns(letter, selectedCells);
+      const allowedSet = new Set();
+      
+      for (const { patternCells } of compatible) {
+        for (const idx of patternCells) {
+          if (!selectedCells.includes(idx)) {
+            allowedSet.add(idx);
+          }
+        }
+      }
+      
+      return allowedSet;
+    }
+
+    // 글자 완성 확인: 선택된 셀들이 정확히 어떤 패턴과 일치하는지
+    function isPatternComplete(letter, selectedCells) {
+      const required = LETTER_SPECS[letter].cells;
+      if (selectedCells.length !== required) return false;
+      
+      const selPattern = cellsToPattern(selectedCells);
+      
+      for (const rawPattern of LETTER_PATTERNS[letter]) {
+        const pattern = normalizePattern(rawPattern);
+        if (patternsEqual(selPattern, pattern)) return true;
+      }
+      return false;
+    }
+
+    // ===== 글자 path 생성 =====
+    function buildLetterPaths(letter, selectedCells) {
+      if (selectedCells.length === 0) return { paths: [] };
+      
+      const rows = selectedCells.map(i => Math.floor(i / GRID_SIZE));
+      const cols = selectedCells.map(i => i % GRID_SIZE);
+      const minR = Math.min(...rows), maxR = Math.max(...rows);
+      const minC = Math.min(...cols), maxC = Math.max(...cols);
+      
+      const x0 = minC * CELL_SIZE;
+      const y0 = minR * CELL_SIZE;
+      const x1 = (maxC + 1) * CELL_SIZE;
+      const y1 = (maxR + 1) * CELL_SIZE;
+      const w = x1 - x0;
+      const h = y1 - y0;
+      
+      const pad = Math.min(w, h) * 0.15;
+      const lx = x0 + pad, rx = x1 - pad;
+      const ty = y0 + pad, by = y1 - pad;
+      const mx = (lx + rx) / 2;
+      const my = (ty + by) / 2;
+      
+      if (letter === 'ㅈ') {
+        const topY = ty + (by - ty) * 0.25;
+        return {
+          paths: [
+            `M ${lx} ${topY} L ${rx} ${topY}`,
+            `M ${mx} ${topY} L ${lx + (rx-lx)*0.1} ${by}`,
+            `M ${mx} ${topY} L ${rx - (rx-lx)*0.1} ${by}`,
+          ]
+        };
+      }
+      
+      if (letter === 'ㅅ') {
+        return {
+          paths: [
+            `M ${mx} ${ty} L ${lx + (rx-lx)*0.05} ${by}`,
+            `M ${mx} ${ty} L ${rx - (rx-lx)*0.05} ${by}`,
+          ]
+        };
+      }
+      
+      if (letter === 'ㅇ') {
+        const rxRad = (rx - lx) / 2 * 0.9;
+        const ryRad = (by - ty) / 2 * 0.9;
+        return {
+          paths: [
+            `M ${mx - rxRad} ${my} ` +
+            `A ${rxRad} ${ryRad} 0 1 1 ${mx + rxRad} ${my} ` +
+            `A ${rxRad} ${ryRad} 0 1 1 ${mx - rxRad} ${my} Z`
+          ]
+        };
+      }
+      
+      return { paths: [] };
+    }
+
+    // ===== 유틸 =====
+    function getAllHiddenCells(player) {
+      const cells = new Set();
+      for (const letter of LETTERS) {
+        const drawing = state.drawings[player][letter];
+        if (drawing) {
+          for (const idx of drawing.cells) cells.add(idx);
+        }
+      }
+      return cells;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function showPrivacyShield(callback) {
+      const shield = document.getElementById('privacyShield');
+      shield.classList.add('active');
+      shield._callback = callback;
+    }
+
+    function hidePrivacyShield() {
+      const shield = document.getElementById('privacyShield');
+      shield.classList.remove('active');
+      if (shield._callback) {
+        shield._callback();
+        shield._callback = null;
+      }
+    }
+
+    // ===== 메뉴 → 닉네임 =====
+    function goToNickname() {
+      showScreen('nicknameScreen');
+      setTimeout(() => document.getElementById('nickname1').focus(), 100);
+    }
+
+    function confirmNicknames() {
+      let n1 = document.getElementById('nickname1').value.trim();
+      let n2 = document.getElementById('nickname2').value.trim();
+      
+      if (!n1) n1 = '학생 1';
+      if (!n2) n2 = '학생 2';
+      if (n1 === n2) {
+        alert('두 친구의 닉네임이 같아요. 다르게 정해주세요!');
+        return;
+      }
+      
+      state.nicknames = { 1: n1, 2: n2 };
+      
+      // 선공 랜덤 결정
+      state.firstPlayer = Math.random() < 0.5 ? 1 : 2;
+      
+      runDrawAnimation();
+    }
+
+    function skipNicknames() {
+      // 닉네임 없이 바로 진행
+      state.nicknames = { 1: '학생 1', 2: '학생 2' };
+      state.firstPlayer = Math.random() < 0.5 ? 1 : 2;
+      runDrawAnimation();
+    }
+
+    function runDrawAnimation() {
+      showScreen('drawScreen');
+      
+      // 동전 애니메이션 (회전 후 결과 보여주기)
+      const coin = document.getElementById('drawCoin');
+      const resultText = document.getElementById('drawResultText');
+      const subtitle = document.getElementById('drawSubtitle');
+      
+      coin.textContent = '?';
+      coin.style.animation = 'none';
+      void coin.offsetWidth;  // reflow
+      coin.style.animation = 'coinSpin 1.5s ease-in-out';
+      
+      setTimeout(() => {
+        coin.textContent = state.firstPlayer;
+        coin.style.background = state.firstPlayer === 1 
+          ? 'linear-gradient(135deg, var(--turmeric), var(--turmeric-light))'
+          : 'linear-gradient(135deg, var(--reaction-light), var(--reaction))';
+      }, 1300);
+      
+      const winnerName = state.nicknames[state.firstPlayer];
+      resultText.textContent = `${winnerName} 선공!`;
+      subtitle.textContent = `${winnerName} 친구부터 글자를 숨겨주세요`;
+      
+      playSound('victory');
+    }
+
+    function startHidePhase() {
+      // 선공이 먼저 숨기기
+      state.currentPlayer = state.firstPlayer;
+      initHideScreen(state.currentPlayer);
+    }
+
+    // ===== 글자 숨기기 =====
+    function initHideScreen(player) {
+      state.currentPlayer = player;
+      state.currentLetter = 'ㅈ';
+      state.placingCells = [];
+      
+      const icon = document.getElementById('hidePlayerIcon');
+      icon.textContent = player;
+      icon.className = 'player-icon' + (player === 2 ? ' player2' : '');
+      document.getElementById('hidePlayerName').textContent = 
+        `${state.nicknames[player]} — 글자 숨기기`;
+      
+      renderHideBoard();
+      renderLetterGuide();
+      updateHideInstruction();
+      updateFinishButton();
+      showScreen('hideScreen');
+    }
+
+    function renderHideBoard() {
+      const svg = document.getElementById('boardSvg');
+      svg.innerHTML = '';
+      svg.classList.add('brush-cursor');
+      svg.classList.remove('sponge-cursor');
+      
+      const player = state.currentPlayer;
+      const placingSet = new Set(state.placingCells);
+      const currentLetter = state.currentLetter;
+      const required = LETTER_SPECS[currentLetter].cells;
+      
+      // 현재 글자가 이미 완성됐는지 확인 (수정 모드 아님)
+      const currentDrawing = state.drawings[player][currentLetter];
+      
+      // 클릭 가능한 칸 계산 (현재 글자 그리는 중일 때만)
+      let allowedNextCells = new Set();
+      if (!currentDrawing) {
+        allowedNextCells = getAllowedNextCells(currentLetter, state.placingCells);
+      }
+      
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const idx = r * GRID_SIZE + c;
+          const x = c * CELL_SIZE;
+          const y = r * CELL_SIZE;
+          
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x + 2);
+          rect.setAttribute('y', y + 2);
+          rect.setAttribute('width', CELL_SIZE - 4);
+          rect.setAttribute('height', CELL_SIZE - 4);
+          rect.setAttribute('rx', 4);
+          rect.classList.add('cell-rect');
+          rect.dataset.idx = idx;
+          
+          // 다른 글자에 차지된 칸
+          let placedByOther = false;
+          for (const letter of LETTERS) {
+            if (letter === currentLetter) continue;
+            const drawing = state.drawings[player][letter];
+            if (drawing && drawing.cells.includes(idx)) {
+              placedByOther = true;
+              break;
+            }
+          }
+          
+          // 클릭 가능 여부 판단
+          const isCurrentSelected = placingSet.has(idx);
+          const isCurrentPlaced = currentDrawing && currentDrawing.cells.includes(idx);
+          const isAllowed = allowedNextCells.has(idx);
+          
+          if (isCurrentPlaced) {
+            rect.classList.add('placed');
+          } else if (placedByOther) {
+            rect.classList.add('placed');
+          } else if (isCurrentSelected) {
+            rect.classList.add('selected');
+          }
+          
+          // 클릭 가능성 결정
+          if (isCurrentPlaced) {
+            // 완성된 글자의 칸 → 클릭하면 재설정 (해당 글자 지우고 그 칸부터 다시)
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleHideCellClick(idx));
+            rect.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              handleHideCellClick(idx);
+            });
+          } else if (placedByOther) {
+            // 다른 글자가 차지함 → 비활성
+            rect.style.cursor = 'not-allowed';
+            rect.style.opacity = '0.6';
+          } else if (currentDrawing) {
+            // 현재 글자가 이미 완성된 상태에서 빈 칸 → 비활성 (수정 모드 안내)
+            rect.style.cursor = 'not-allowed';
+            rect.style.opacity = '0.5';
+          } else if (isCurrentSelected) {
+            // 이미 선택한 칸 → 취소 가능
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleHideCellClick(idx));
+            rect.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              handleHideCellClick(idx);
+            });
+          } else if (isAllowed) {
+            // 자연스러운 글자 모양이 만들어질 수 있는 칸
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleHideCellClick(idx));
+            rect.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              handleHideCellClick(idx);
+            });
+          } else {
+            // 클릭하면 글자가 어색해지는 칸 → 비활성
+            rect.style.cursor = 'not-allowed';
+            rect.style.opacity = '0.35';
+          }
+          
+          svg.appendChild(rect);
+        }
+      }
+      
+      // 다른 글자들 표시
+      for (const letter of LETTERS) {
+        if (letter === currentLetter) continue;
+        const drawing = state.drawings[player][letter];
+        if (drawing) {
+          drawLetterPaths(svg, drawing.paths, 'hidden-state', drawing.cells);
+        }
+      }
+      
+      // 현재 글자: 이미 완성됐으면 표시
+      if (currentDrawing && state.placingCells.length === 0) {
+        drawLetterPaths(svg, currentDrawing.paths, 'hidden-state', currentDrawing.cells);
+      }
+    }
+
+    function drawLetterPaths(svg, paths, stateClass, clipCells) {
+      const svgNS = 'http://www.w3.org/2000/svg';
+      
+      // 선택된 칸들이 있으면 그 영역으로만 글자가 보이도록 clipPath 적용
+      if (clipCells && clipCells.length > 0) {
+        const clipId = `letter-clip-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        const defs = document.createElementNS(svgNS, 'defs');
+        const clip = document.createElementNS(svgNS, 'clipPath');
+        clip.setAttribute('id', clipId);
+        
+        for (const idx of clipCells) {
+          const r = Math.floor(idx / GRID_SIZE);
+          const c = idx % GRID_SIZE;
+          const clipRect = document.createElementNS(svgNS, 'rect');
+          clipRect.setAttribute('x', c * CELL_SIZE);
+          clipRect.setAttribute('y', r * CELL_SIZE);
+          clipRect.setAttribute('width', CELL_SIZE);
+          clipRect.setAttribute('height', CELL_SIZE);
+          clip.appendChild(clipRect);
+        }
+        
+        defs.appendChild(clip);
+        svg.appendChild(defs);
+        
+        const g = document.createElementNS(svgNS, 'g');
+        g.setAttribute('clip-path', `url(#${clipId})`);
+        
+        for (const d of paths) {
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', d);
+          path.classList.add('stroke-piece', stateClass);
+          g.appendChild(path);
+        }
+        
+        svg.appendChild(g);
+      } else {
+        // 클리핑 없이 그대로 (백업)
+        for (const d of paths) {
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', d);
+          path.classList.add('stroke-piece', stateClass);
+          svg.appendChild(path);
+        }
+      }
+    }
+
+    function handleHideCellClick(idx) {
+      const player = state.currentPlayer;
+      const letter = state.currentLetter;
+      const required = LETTER_SPECS[letter].cells;
+      
+      // 다른 글자에 차지된 칸은 무시
+      for (const otherLetter of LETTERS) {
+        if (otherLetter === letter) continue;
+        const otherDrawing = state.drawings[player][otherLetter];
+        if (otherDrawing && otherDrawing.cells.includes(idx)) return;
+      }
+      
+      const currentDrawing = state.drawings[player][letter];
+      if (currentDrawing) {
+        if (currentDrawing.cells.includes(idx)) {
+          // 완성된 글자의 칸 → 재설정 모드
+          state.drawings[player][letter] = null;
+          state.placingCells = [idx];
+          renderHideBoard();
+          renderLetterGuide();
+          updateHideInstruction();
+          updateFinishButton();
+          playSound('paint');
+          return;
+        } else {
+          return;
+        }
+      }
+      
+      // 현재 선택 중인 칸이면 제거
+      const placingIdx = state.placingCells.indexOf(idx);
+      if (placingIdx !== -1) {
+        state.placingCells.splice(placingIdx, 1);
+        renderHideBoard();
+        renderLetterGuide();
+        updateHideInstruction();
+        return;
+      }
+      
+      // 허용된 칸인지 확인 (자연스러운 글자가 만들어지는 위치만)
+      const allowedCells = getAllowedNextCells(letter, state.placingCells);
+      if (!allowedCells.has(idx)) {
+        // 허용되지 않은 칸 → 무시
+        return;
+      }
+      
+      // 추가
+      if (state.placingCells.length < required) {
+        state.placingCells.push(idx);
+        playSound('paint');
+        
+        if (state.placingCells.length === required) {
+          // 패턴 매칭 확인 (이론상 무조건 성공해야 함)
+          if (isPatternComplete(letter, state.placingCells)) {
+            const { paths } = buildLetterPaths(letter, state.placingCells);
+            state.drawings[player][letter] = {
+              cells: [...state.placingCells],
+              paths: paths
+            };
+            state.placingCells = [];
+            
+            // 다음 글자로 자동 이동
+            const nextLetter = LETTERS.find(l => !state.drawings[player][l]);
+            if (nextLetter) {
+              state.currentLetter = nextLetter;
+            }
+            playSound('reaction');
+          } else {
+            // 이론상 발생하지 않지만 안전장치
+            state.placingCells = [];
+            playSound('error');
+          }
+        }
+        
+        renderHideBoard();
+        renderLetterGuide();
+        updateHideInstruction();
+        updateFinishButton();
+      }
+    }
+
+    function showInvalidWarning() {
+      const box = document.getElementById('hideInstructionBox');
+      const title = document.getElementById('hideInstrTitle');
+      const text = document.getElementById('hideInstrText');
+      const oldTitle = title.innerHTML;
+      const oldText = text.innerHTML;
+      
+      title.innerHTML = '⚠️ 칸이 너무 멀리 떨어져 있어요!';
+      text.innerHTML = `'${state.currentLetter}'을(를) 그리기엔 칸들이 너무 흩어져 있어요. 좀 더 가까운 칸들을 선택해 주세요. (잘못 선택한 칸을 다시 클릭하면 취소됩니다)`;
+      box.classList.add('warning');
+      
+      setTimeout(() => {
+        title.innerHTML = oldTitle;
+        text.innerHTML = oldText;
+        box.classList.remove('warning');
+        renderHideBoard();
+        updateHideInstruction();
+      }, 2500);
+    }
+
+    function renderLetterGuide() {
+      const guide = document.getElementById('letterGuide');
+      const player = state.currentPlayer;
+      
+      guide.innerHTML = LETTERS.map(letter => {
+        const drawing = state.drawings[player][letter];
+        const required = LETTER_SPECS[letter].cells;
+        let count = drawing ? required : (letter === state.currentLetter ? state.placingCells.length : 0);
+        
+        let className = 'letter-chip';
+        if (letter === state.currentLetter && !drawing) className += ' active';
+        else if (drawing) className += ' done';
+        
+        const previewSvg = getLetterPreviewSvg(letter);
+        
+        return `
+          <div class="${className}" onclick="selectLetter('${letter}')">
+            <div>${letter}</div>
+            <div class="letter-chip-count">${count} / ${required}칸</div>
+            ${previewSvg}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getLetterPreviewSvg(letter) {
+      let cellsExample = [];
+      let pathsExample = [];
+      
+      if (letter === 'ㅈ') {
+        cellsExample = [[0,0],[1,0],[2,0],[3,0]];
+        pathsExample = [
+          'M 3 7 L 37 7',
+          'M 20 7 L 7 35',
+          'M 20 7 L 33 35'
+        ];
+      } else if (letter === 'ㅅ') {
+        // 4칸 큰 V자: 위 가운데 + 한 칸 띄고 좌우 + 아래 가운데
+        // 좌표는 [col, row]
+        cellsExample = [[1,0],[0,1],[2,1],[1,2]];
+        // ㅅ 형태로 path 조정: 양쪽 다리가 4x4 미니그리드에서
+        pathsExample = [
+          'M 20 5 L 6 30',
+          'M 20 5 L 34 30'
+        ];
+      } else if (letter === 'ㅇ') {
+        cellsExample = [[1,0],[2,0],[1,1],[2,1]];
+        pathsExample = [
+          'M 7 20 A 13 13 0 1 1 33 20 A 13 13 0 1 1 7 20 Z'
+        ];
+      }
+      
+      const cells = cellsExample.map(([c, r]) => {
+        return `<rect x="${c*10 + 0.5}" y="${r*10 + 0.5}" width="9" height="9" rx="1" fill="#FFF4D6" stroke="#8B5A2B" stroke-width="0.5"/>`;
+      }).join('');
+      
+      const paths = pathsExample.map(d => 
+        `<path d="${d}" stroke="rgba(70,40,15,0.85)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+      ).join('');
+      
+      const gridBg = [];
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          gridBg.push(`<rect x="${c*10 + 0.5}" y="${r*10 + 0.5}" width="9" height="9" rx="1" fill="#F8F5E8" stroke="#DDD" stroke-width="0.3"/>`);
+        }
+      }
+      
+      return `
+        <svg class="letter-preview-mini" viewBox="0 0 40 40">
+          ${gridBg.join('')}
+          ${cells}
+          ${paths}
+        </svg>
+      `;
+    }
+
+    function selectLetter(letter) {
+      if (state.placingCells.length > 0) {
+        if (!confirm('현재 선택을 취소하고 다른 글자로 이동할까요?')) return;
+        state.placingCells = [];
+      }
+      state.currentLetter = letter;
+      renderHideBoard();
+      renderLetterGuide();
+      updateHideInstruction();
+    }
+
+    function cancelCurrentLetter() {
+      const player = state.currentPlayer;
+      const letter = state.currentLetter;
+      
+      if (state.placingCells.length > 0) {
+        state.placingCells = [];
+      } else if (state.drawings[player][letter]) {
+        state.drawings[player][letter] = null;
+      }
+      
+      renderHideBoard();
+      renderLetterGuide();
+      updateHideInstruction();
+      updateFinishButton();
+    }
+
+    function updateHideInstruction() {
+      const player = state.currentPlayer;
+      const letter = state.currentLetter;
+      const required = LETTER_SPECS[letter].cells;
+      const drawing = state.drawings[player][letter];
+      
+      const titleEl = document.getElementById('hideInstrTitle');
+      const textEl = document.getElementById('hideInstrText');
+      
+      if (drawing) {
+        titleEl.innerHTML = `✓ '${letter}'을(를) 숨겼어요!`;
+        const allDone = LETTERS.every(l => state.drawings[player][l]);
+        if (allDone) {
+          textEl.innerHTML = `세 글자 모두 완성! <strong>준비 완료</strong>를 누르세요.`;
+        } else {
+          const next = LETTERS.find(l => !state.drawings[player][l]);
+          textEl.innerHTML = `다음 글자 '<strong>${next}</strong>'를 숨겨주세요.`;
+        }
+      } else {
+        const remaining = required - state.placingCells.length;
+        titleEl.innerHTML = `🖌️ '${letter}'을(를) 숨길 위치를 클릭하세요`;
+        if (state.placingCells.length === 0) {
+          textEl.innerHTML = `격자판에서 <strong>${required}칸</strong>을 클릭하세요. 글자가 자연스럽게 그려지는 칸만 선택할 수 있어요.`;
+        } else {
+          textEl.innerHTML = `${state.placingCells.length}칸 선택됨 — <strong>${remaining}칸 더</strong> 클릭하세요. 진하게 보이는 칸만 선택할 수 있어요. (이미 선택한 칸을 다시 클릭하면 취소됩니다)`;
+        }
+      }
+    }
+
+    function updateFinishButton() {
+      const btn = document.getElementById('finishHideBtn');
+      const player = state.currentPlayer;
+      const allDone = LETTERS.every(l => state.drawings[player][l]);
+      btn.disabled = !allDone;
+    }
+
+    function finishHiding() {
+      const currentPlayer = state.currentPlayer;
+      const otherPlayer = currentPlayer === 1 ? 2 : 1;
+      const otherDone = LETTERS.every(l => state.drawings[otherPlayer][l]);
+      
+      if (!otherDone) {
+        // 다른 플레이어가 아직 안 함
+        showPrivacyShield(() => {
+          document.getElementById('switchTitle').textContent = 
+            `${state.nicknames[otherPlayer]}의 차례입니다`;
+          document.getElementById('switchText').innerHTML = 
+            `이제 <strong>${state.nicknames[otherPlayer]}</strong>가 글자를 숨길 차례입니다.<br>준비됐다면 시작 버튼을 누르세요.`;
+          showScreen('switchScreen');
+        });
+      } else {
+        // 둘 다 완료
+        showPrivacyShield(() => {
+          // 대결 시작 화면 메시지 갱신
+          document.getElementById('startBattleText').innerHTML = 
+            `두 친구 모두 글자를 숨겼습니다.<br>이제 강황 스폰지로 상대 격자판을 찍어 글자를 찾아보세요!<br><br><strong>${state.nicknames[state.firstPlayer]}</strong>부터 시작합니다.`;
+          showScreen('startBattleScreen');
+        });
+      }
+    }
+
+    function confirmSwitch() {
+      const otherPlayer = state.currentPlayer === 1 ? 2 : 1;
+      initHideScreen(otherPlayer);
+    }
+
+    // ===== 대결 =====
+    function startBattle() {
+      state.battleStarted = true;
+      state.startTime = Date.now();
+      state.currentTurn = state.firstPlayer;
+      state.timerInterval = setInterval(updateTimer, 1000);
+      
+      renderBattleBoard();
+      updateBattleUI();
+      showScreen('battleScreen');
+      
+      setTimeout(() => showTurnToast(state.currentTurn), 300);
+    }
+
+    function renderBattleBoard() {
+      const svg = document.getElementById('battleBoardSvg');
+      svg.innerHTML = '';
+      svg.classList.add('sponge-cursor');
+      svg.classList.remove('brush-cursor');
+      
+      const attacker = state.currentTurn;
+      const defender = attacker === 1 ? 2 : 1;
+      const defenderHidden = getAllHiddenCells(defender);
+      
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const idx = r * GRID_SIZE + c;
+          const x = c * CELL_SIZE;
+          const y = r * CELL_SIZE;
+          
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x + 2);
+          rect.setAttribute('y', y + 2);
+          rect.setAttribute('width', CELL_SIZE - 4);
+          rect.setAttribute('height', CELL_SIZE - 4);
+          rect.setAttribute('rx', 4);
+          rect.classList.add('cell-rect');
+          rect.dataset.idx = idx;
+          
+          if (state.attackedCells[defender].has(idx)) {
+            const isHidden = defenderHidden.has(idx);
+            rect.classList.add(isHidden ? 'reacted' : 'turmeric');
+            rect.style.cursor = 'default';
+          } else {
+            rect.style.cursor = 'crosshair';
+            rect.addEventListener('click', () => attackCell(idx));
+            rect.addEventListener('touchstart', (e) => {
+              e.preventDefault();
+              attackCell(idx);
+            });
+          }
+          
+          svg.appendChild(rect);
+        }
+      }
+      
+      drawRevealedLetters(svg, defender, state.attackedCells[defender]);
+    }
+
+    function drawRevealedLetters(svg, player, attackedCellSet) {
+      const svgNS = 'http://www.w3.org/2000/svg';
+      
+      for (const letter of LETTERS) {
+        const drawing = state.drawings[player][letter];
+        if (!drawing) continue;
+        
+        const revealedCells = drawing.cells.filter(idx => attackedCellSet.has(idx));
+        if (revealedCells.length === 0) continue;
+        
+        const clipId = `clip-${player}-${letter}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        const defs = document.createElementNS(svgNS, 'defs');
+        const clip = document.createElementNS(svgNS, 'clipPath');
+        clip.setAttribute('id', clipId);
+        
+        for (const idx of revealedCells) {
+          const r = Math.floor(idx / GRID_SIZE);
+          const c = idx % GRID_SIZE;
+          const clipRect = document.createElementNS(svgNS, 'rect');
+          clipRect.setAttribute('x', c * CELL_SIZE);
+          clipRect.setAttribute('y', r * CELL_SIZE);
+          clipRect.setAttribute('width', CELL_SIZE);
+          clipRect.setAttribute('height', CELL_SIZE);
+          clip.appendChild(clipRect);
+        }
+        
+        defs.appendChild(clip);
+        svg.appendChild(defs);
+        
+        const g = document.createElementNS(svgNS, 'g');
+        g.setAttribute('clip-path', `url(#${clipId})`);
+        
+        for (const d of drawing.paths) {
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', d);
+          path.classList.add('stroke-piece', 'revealed-state');
+          g.appendChild(path);
+        }
+        
+        svg.appendChild(g);
+      }
+    }
+
+    function attackCell(idx) {
+      const attacker = state.currentTurn;
+      const defender = attacker === 1 ? 2 : 1;
+      
+      if (state.attackedCells[defender].has(idx)) return;
+      
+      state.attackedCells[defender].add(idx);
+      state.attackCount[attacker]++;
+      
+      const defenderHidden = getAllHiddenCells(defender);
+      const isHidden = defenderHidden.has(idx);
+      
+      if (isHidden) {
+        state.foundLetters[defender].add(idx);
+        playSound('reaction');
+        
+        const totalHidden = defenderHidden.size;
+        if (state.foundLetters[defender].size === totalHidden) {
+          renderBattleBoard();
+          setTimeout(() => endGame(attacker), 1000);
+          return;
+        }
+        
+        showBonusMessage();
+        renderBattleBoard();
+        updateBattleUI();
+      } else {
+        playSound('paint');
+        renderBattleBoard();
+        updateBattleUI();
+        
+        setTimeout(() => {
+          switchTurn();
+        }, 1200);
+      }
+    }
+
+    function switchTurn() {
+      state.currentTurn = state.currentTurn === 1 ? 2 : 1;
+      showTurnToast(state.currentTurn);
+      renderBattleBoard();
+      updateBattleUI();
+    }
+
+    function showTurnToast(player) {
+      const toast = document.getElementById('turnToast');
+      document.getElementById('toastTitle').textContent = 
+        `${state.nicknames[player]}의 차례입니다`;
+      document.getElementById('toastSubtitle').textContent = 
+        '🧽 강황 스폰지로 찍어보세요';
+      
+      toast.classList.remove('fading');
+      toast.classList.add('active');
+      
+      setTimeout(() => {
+        toast.classList.add('fading');
+        setTimeout(() => {
+          toast.classList.remove('active', 'fading');
+        }, 400);
+      }, 1800);
+    }
+
+    function updateBattleUI() {
+      const attacker = state.currentTurn;
+      const defender = attacker === 1 ? 2 : 1;
+      
+      const icon = document.getElementById('currentPlayerIcon');
+      icon.textContent = attacker;
+      icon.className = 'player-icon' + (attacker === 2 ? ' player2' : '');
+      document.getElementById('currentPlayerName').textContent = 
+        `${state.nicknames[attacker]}의 차례`;
+      
+      const found = state.foundLetters[defender].size;
+      const total = getAllHiddenCells(defender).size;
+      document.getElementById('findProgress').textContent = `${found} / ${total}`;
+      document.getElementById('attackCount').textContent = `${state.attackCount[attacker]}회`;
+    }
+
+    function showBonusMessage() {
+      const box = document.getElementById('battleInstructionBox');
+      const text = document.getElementById('battleInstruction');
+      const original = text.innerHTML;
+      
+      text.innerHTML = '🎉 <strong>글자 발견! 한 번 더 찍어보세요!</strong>';
+      box.classList.add('bonus');
+      
+      setTimeout(() => {
+        text.innerHTML = original;
+        box.classList.remove('bonus');
+      }, 1500);
+    }
+
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      document.getElementById('gameTimer').textContent = `${m}:${s}`;
+    }
+
+    function confirmEndTurn() {
+      if (confirm('정말 게임을 종료하시겠어요? 현재까지 더 많이 찾은 친구가 승리합니다.')) {
+        const p1Score = state.foundLetters[2].size;
+        const p2Score = state.foundLetters[1].size;
+        endGame(p1Score >= p2Score ? 1 : 2);
+      }
+    }
+
+    function endGame(winner) {
+      clearInterval(state.timerInterval);
+      state.winner = winner;
+      
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      
+      // 결과 텍스트
+      document.getElementById('winnerName').textContent = state.nicknames[winner];
+      document.getElementById('resultName1').textContent = state.nicknames[1];
+      document.getElementById('resultName2').textContent = state.nicknames[2];
+      document.getElementById('resultTime').textContent = 
+        m > 0 ? `${m}분 ${s}초` : `${s}초`;
+      document.getElementById('result1Clicks').textContent = `${state.attackCount[1]}회`;
+      document.getElementById('result2Clicks').textContent = `${state.attackCount[2]}회`;
+      
+      showScreen('resultScreen');
+      
+      // 폭죽 발사
+      setTimeout(() => launchFireworks(), 300);
+      
+      // 박진감 있는 사운드
+      playSound('fanfare');
+    }
+
+    function launchFireworks() {
+      const container = document.getElementById('resultContent');
+      const colors = ['#E8B53D', '#C04828', '#8B5A2B', '#4A8B3A', '#E63946', '#FFD93D'];
+      
+      // 여러 차례 폭죽
+      for (let burst = 0; burst < 3; burst++) {
+        setTimeout(() => {
+          const cx = 100 + Math.random() * (container.offsetWidth - 200);
+          const cy = 50 + Math.random() * 300;
+          
+          for (let i = 0; i < 16; i++) {
+            const angle = (Math.PI * 2 * i) / 16;
+            const dist = 80 + Math.random() * 60;
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            
+            const fw = document.createElement('div');
+            fw.className = 'firework';
+            fw.style.background = colors[Math.floor(Math.random() * colors.length)];
+            fw.style.left = cx + 'px';
+            fw.style.top = cy + 'px';
+            fw.style.setProperty('--tx', tx + 'px');
+            fw.style.setProperty('--ty', ty + 'px');
+            container.appendChild(fw);
+            
+            setTimeout(() => fw.remove(), 1600);
+          }
+          
+          playSound('paint');
+        }, burst * 500);
+      }
+    }
+
+    function resetGame() {
+      // 닉네임 유지하고 다시 시작
+      state.placingCells = [];
+      state.drawings = {
+        1: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null },
+        2: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null }
+      };
+      state.attackedCells = { 1: new Set(), 2: new Set() };
+      state.foundLetters = { 1: new Set(), 2: new Set() };
+      state.attackCount = { 1: 0, 2: 0 };
+      state.winner = null;
+      state.battleStarted = false;
+      
+      // 선공 다시 결정
+      state.firstPlayer = Math.random() < 0.5 ? 1 : 2;
+      runDrawAnimation();
+    }
+
+    function goHome() {
+      clearInterval(state.timerInterval);
+      // 닉네임 초기화
+      state.nicknames = { 1: '학생 1', 2: '학생 2' };
+      state.placingCells = [];
+      state.drawings = {
+        1: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null },
+        2: { 'ㅈ': null, 'ㅅ': null, 'ㅇ': null }
+      };
+      state.attackedCells = { 1: new Set(), 2: new Set() };
+      state.foundLetters = { 1: new Set(), 2: new Set() };
+      state.attackCount = { 1: 0, 2: 0 };
+      document.getElementById('nickname1').value = '';
+      document.getElementById('nickname2').value = '';
+      showScreen('menuScreen');
+    }
+
+    // ===== 사운드 =====
+    let audioCtx = null;
+    function playSound(type) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const beep = (freq, dur, vol = 0.15, wave = 'sine', delay = 0) => {
+          setTimeout(() => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.frequency.value = freq;
+            o.type = wave;
+            g.gain.setValueAtTime(vol, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+            o.start();
+            o.stop(audioCtx.currentTime + dur);
+          }, delay);
+        };
+        
+        if (type === 'paint') {
+          beep(350, 0.25, 0.15, 'sine');
+        } else if (type === 'reaction') {
+          beep(700, 0.3, 0.18, 'triangle');
+          beep(900, 0.3, 0.18, 'triangle', 100);
+        } else if (type === 'victory') {
+          [523, 659, 784, 1047].forEach((f, i) => beep(f, 0.3, 0.15, 'triangle', i * 150));
+        } else if (type === 'error') {
+          beep(220, 0.2, 0.15, 'sawtooth');
+          beep(180, 0.3, 0.15, 'sawtooth', 150);
+        } else if (type === 'fanfare') {
+          // 더 박진감 있는 팡파레
+          beep(523, 0.15, 0.2, 'triangle', 0);
+          beep(659, 0.15, 0.2, 'triangle', 120);
+          beep(784, 0.15, 0.2, 'triangle', 240);
+          beep(1047, 0.4, 0.25, 'triangle', 360);
+          beep(784, 0.15, 0.18, 'triangle', 700);
+          beep(1047, 0.6, 0.25, 'triangle', 850);
+        }
+      } catch (e) {}
+    }
+  </script>
+</body>
+</html>
