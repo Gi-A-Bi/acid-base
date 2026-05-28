@@ -119,6 +119,42 @@
     .menu-card h2 { font-size: 22px; margin-bottom: 16px; }
     .menu-card p { font-size: 15px; line-height: 1.8; color: var(--wood); margin-bottom: 24px; text-align: left; }
 
+    /* QR 코드 영역 */
+    .qr-section {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qr-card {
+      background: white;
+      border: 3px solid var(--wood);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: inline-block;
+    }
+
+    .qr-card img {
+      display: block;
+      width: 160px;
+      height: 160px;
+      image-rendering: pixelated;
+    }
+
+    .qr-label {
+      font-size: 14px;
+      color: var(--wood);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .qr-label strong {
+      color: var(--reaction);
+    }
+
     .btn {
       padding: 14px 32px;
       font-size: 17px;
@@ -634,6 +670,99 @@
       cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><ellipse cx='20' cy='22' rx='14' ry='10' fill='%23E8B53D' stroke='%238B5A2B' stroke-width='1.5'/><circle cx='14' cy='20' r='1.5' fill='%23B8860B'/><circle cx='24' cy='18' r='1.2' fill='%23B8860B'/><circle cx='20' cy='25' r='1' fill='%23B8860B'/><circle cx='27' cy='24' r='1' fill='%23B8860B'/><circle cx='13' cy='25' r='0.8' fill='%23B8860B'/></svg>") 20 22, crosshair;
     }
 
+    /* 음소거 버튼 */
+    .sound-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2.5px solid var(--wood);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: var(--shadow);
+      z-index: 90;
+      transition: all 0.2s ease;
+    }
+
+    .sound-toggle:hover {
+      transform: scale(1.1);
+      background: var(--paper-dark);
+    }
+
+    .sound-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .sound-toggle.muted {
+      background: #DDD;
+      opacity: 0.6;
+    }
+
+    /* 커스텀 확인 팝업 */
+    .confirm-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 20px;
+    }
+
+    .confirm-modal.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .confirm-modal-card {
+      background: var(--paper);
+      border: 4px solid var(--wood);
+      border-radius: 20px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .confirm-modal-emoji {
+      font-size: 60px;
+      margin-bottom: 12px;
+    }
+
+    .confirm-modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .confirm-modal-text {
+      font-size: 14px;
+      color: var(--wood);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .confirm-modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
     @media (max-width: 768px) {
       .title { font-size: 32px; }
       .game-header { padding: 12px; }
@@ -646,6 +775,22 @@
   </style>
 </head>
 <body>
+
+  <!-- 음소거 버튼 -->
+  <button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="소리 켜기/끄기">🔊</button>
+
+  <!-- 커스텀 확인 팝업 -->
+  <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-modal-card">
+      <div class="confirm-modal-emoji" id="confirmEmoji">🤔</div>
+      <h2 class="confirm-modal-title" id="confirmTitle">정말 처음으로 돌아갈까요?</h2>
+      <p class="confirm-modal-text" id="confirmText">진행 중인 게임은 사라집니다.</p>
+      <div class="confirm-modal-buttons">
+        <button class="btn btn-secondary" onclick="closeConfirm()">취소</button>
+        <button class="btn btn-primary" id="confirmYesBtn" onclick="confirmYes()">네, 돌아갈래요</button>
+      </div>
+    </div>
+  </div>
 
   <div class="privacy-shield" id="privacyShield">
     <div class="privacy-shield-card">
@@ -709,6 +854,15 @@
           상대의 모든 글자 칸을 먼저 찾으면 승리!
         </p>
         <button class="btn btn-primary" onclick="goToNickname()">시작하기 🚀</button>
+      </div>
+
+      <div class="qr-section">
+        <div class="qr-card">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEdAQAAAACeIGfQAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAD4klEQVR42u2aP4/jVBTFf/c5q4TK6aBzEBIF4gNshd3S08OnoEKy3VLxEfgCtDQI4YEKum1ox7MVBUiOkJAj2T5bPCdOMs4mGy2zI41vYVnyif/cd9955548ExfE2nFRvGXYxnw4oHXktmwduZmDu+HS7m7aHXZRXv9udhlMD5mQtwqjNklSjYq4QSoAiCSpmEuSSlPl+vvNoCgBVgzHBQDLR/6l7xy2wg5q8WAUAgFhgyRJGaE60gKTirAB4spUvf6hzdNO72WwGzMH0d3CZKm6U7Cin9PNlLc3hRmsFjNGSn2vyItA2pY6kBZhPVbkqym952CzfZikCrhZgVlCa6Zi3gEE6qn9sMiHYVpM6T0D685BKsAhMzObAdHGlLGe7364NjOz1ZTe6xXXvKeNjvRmhqmkdRBXQLy7NKX3LcDKMVo40OTL1sySoAPmjckSIE/WCxk3y7F14TiyaRRGQzVbzlaDCgh2HBLWJqkMVLmB+/fo/CCW01x4aFjCSYUvlfPGlMUNkp9esfy67JuwnfhZoJOtwrvj3kfc7dLnMRCpP90uFL65RWW0TW+xP2WO+C0rqyu+1J72XJjt2v+NmUnamKzvswbvhqAjT8t7d9MDl+VjLnI749UAacUzSUXPGHsNqpNUBVsOqeiAlbv3IgKY1oXrYfMGWayNI483ZpbQOu+YZVGFzJKwGymkcuhoV0+ayc8UebPAWBDc6vaXBmLVnt31HQ6T2peRVOEl0lYjkaryi+jQ7YY655jNpiIfUfjLwUzQZtvLMq8hT4BUqmU2wuSHOZ045AzsH7P33v+X8C8+f2H2yRcf//S1+5Efgq/45lu89ViDMgikLGr8aUfqBUzYmC60hZ92n2WnYSaTqtbB3bwjLWgDZYQdsF4AeCZ3h2y5mqr3oqgDEakBQSDdFvCR9DLynm+gX+NbqfK2cCTJE3dGqMO4gMmnUXg4mFTSmlS0XuE78mS91fl5snbHf3tpyttZ8ZMNbWxf9FtPoCMtwoZYvSt0SPjFwRu4A/thqt4rYXtbDqKGXuH7yr5betvmtMI/Pp3Se29d2G05kLpe4ROrhFS3NdKN92rcICg7SKiBhKUnFQNVU3qvgm0Vvpktgdwr/FCSJWFHbrZg1KuZ0nseNiK27cv/PjT7APjd/oC5tPmNF/bpUbfkvqeEv4Ga5/AcZp9R8eeU3jeClUcS1G85yKLGtlZ74dsq+qqv7hmSq9HVekrvCCzzdLJLvWBF0uxPBuddg9245EnYYFmkn5+pIOhIk/MPfZJeTfeaNrYZmHzYckDQQXQ3Q5asA1lCG+ikVzOmRqci/19hrwAcsjJigfPE7gAAAABJRU5ErkJggg==" alt="게임 접속 QR 코드">
+        </div>
+        <div class="qr-label">
+          📱 <strong>스마트 기기로 </strong> QR을 찍어 접속하세요
+        </div>
       </div>
     </div>
 
@@ -867,7 +1021,7 @@
       </div>
 
       <div class="button-row">
-        <button class="btn btn-secondary" onclick="confirmEndTurn()">중간 종료</button>
+        <button class="btn btn-secondary" onclick="confirmGoHome()">처음으로 🏠</button>
       </div>
     </div>
 
@@ -1197,6 +1351,9 @@
 
     // ===== 메뉴 → 닉네임 =====
     function goToNickname() {
+      // 첫 사용자 상호작용 — AudioContext 활성화
+      getAudioCtx();
+      playSound('start');
       showScreen('nicknameScreen');
       setTimeout(() => document.getElementById('nickname1').focus(), 100);
     }
@@ -1251,7 +1408,7 @@
       resultText.textContent = `${winnerName} 선공!`;
       subtitle.textContent = `${winnerName} 친구부터 글자를 숨겨주세요`;
       
-      playSound('victory');
+      playSound('coin');
     }
 
     function startHidePhase() {
@@ -1464,7 +1621,7 @@
           renderLetterGuide();
           updateHideInstruction();
           updateFinishButton();
-          playSound('paint');
+          playSound('brush');
           return;
         } else {
           return;
@@ -1478,6 +1635,7 @@
         renderHideBoard();
         renderLetterGuide();
         updateHideInstruction();
+        playSound('cancel');
         return;
       }
       
@@ -1491,7 +1649,7 @@
       // 추가
       if (state.placingCells.length < required) {
         state.placingCells.push(idx);
-        playSound('paint');
+        playSound('brush');
         
         if (state.placingCells.length === required) {
           // 패턴 매칭 확인 (이론상 무조건 성공해야 함)
@@ -1508,7 +1666,8 @@
             if (nextLetter) {
               state.currentLetter = nextLetter;
             }
-            playSound('reaction');
+            // 글자 완성 시 만족스러운 음
+            setTimeout(() => playSound('letterComplete'), 100);
           } else {
             // 이론상 발생하지 않지만 안전장치
             state.placingCells = [];
@@ -1840,8 +1999,10 @@
         showBonusMessage();
         renderBattleBoard();
         updateBattleUI();
+        // 반응 사운드 후 보너스 사운드
+        setTimeout(() => playSound('bonus'), 600);
       } else {
-        playSound('paint');
+        playSound('sponge');
         renderBattleBoard();
         updateBattleUI();
         
@@ -1867,6 +2028,7 @@
       
       toast.classList.remove('fading');
       toast.classList.add('active');
+      playSound('turn');
       
       setTimeout(() => {
         toast.classList.add('fading');
@@ -1913,12 +2075,37 @@
       document.getElementById('gameTimer').textContent = `${m}:${s}`;
     }
 
-    function confirmEndTurn() {
-      if (confirm('정말 게임을 종료하시겠어요? 현재까지 더 많이 찾은 친구가 승리합니다.')) {
-        const p1Score = state.foundLetters[2].size;
-        const p2Score = state.foundLetters[1].size;
-        endGame(p1Score >= p2Score ? 1 : 2);
-      }
+    // ===== 커스텀 확인 팝업 =====
+    let confirmCallback = null;
+    
+    function showConfirm({ emoji = '🤔', title, text, yesLabel = '네', onYes }) {
+      document.getElementById('confirmEmoji').textContent = emoji;
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmText').textContent = text;
+      document.getElementById('confirmYesBtn').textContent = yesLabel;
+      confirmCallback = onYes;
+      document.getElementById('confirmModal').classList.add('active');
+    }
+    
+    function closeConfirm() {
+      document.getElementById('confirmModal').classList.remove('active');
+      confirmCallback = null;
+    }
+    
+    function confirmYes() {
+      const cb = confirmCallback;
+      closeConfirm();
+      if (cb) cb();
+    }
+    
+    function confirmGoHome() {
+      showConfirm({
+        emoji: '🏠',
+        title: '처음 화면으로 돌아갈까요?',
+        text: '진행 중인 게임은 사라집니다.',
+        yesLabel: '네, 돌아갈래요',
+        onYes: () => goHome()
+      });
     }
 
     function endGame(winner) {
@@ -1975,7 +2162,7 @@
             setTimeout(() => fw.remove(), 1600);
           }
           
-          playSound('paint');
+          playSound('firework');
         }, burst * 500);
       }
     }
@@ -2015,45 +2202,183 @@
       showScreen('menuScreen');
     }
 
-    // ===== 사운드 =====
+    // ===== 사운드 시스템 =====
     let audioCtx = null;
+    let soundMuted = false;
+    
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+    
+    function toggleSound() {
+      soundMuted = !soundMuted;
+      const btn = document.getElementById('soundToggle');
+      btn.textContent = soundMuted ? '🔇' : '🔊';
+      btn.classList.toggle('muted', soundMuted);
+      // 켤 때는 짧은 확인음
+      if (!soundMuted) {
+        tone(800, 0.1, 0.1, 'sine');
+      }
+    }
+    
+    // 기본 톤 재생 (주파수, 길이, 볼륨, 파형, 지연시간, 주파수 슬라이드)
+    function tone(freq, dur, vol = 0.15, wave = 'sine', delay = 0, freqEnd = null) {
+      if (soundMuted) return;
+      try {
+        const ctx = getAudioCtx();
+        setTimeout(() => {
+          if (soundMuted) return;
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.type = wave;
+          o.frequency.setValueAtTime(freq, ctx.currentTime);
+          if (freqEnd !== null) {
+            o.frequency.exponentialRampToValueAtTime(freqEnd, ctx.currentTime + dur);
+          }
+          g.gain.setValueAtTime(vol, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+          o.start();
+          o.stop(ctx.currentTime + dur);
+        }, delay);
+      } catch (e) {}
+    }
+    
+    // 노이즈 재생 (스폰지, 붓 등 자연스러운 소리)
+    function noise(dur, vol = 0.1, filterFreq = 1000, delay = 0) {
+      if (soundMuted) return;
+      try {
+        const ctx = getAudioCtx();
+        setTimeout(() => {
+          if (soundMuted) return;
+          const bufferSize = ctx.sampleRate * dur;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+          }
+          
+          const src = ctx.createBufferSource();
+          src.buffer = buffer;
+          
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = filterFreq;
+          
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(vol, ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+          
+          src.connect(filter);
+          filter.connect(g);
+          g.connect(ctx.destination);
+          src.start();
+        }, delay);
+      } catch (e) {}
+    }
+    
     function playSound(type) {
       try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        const beep = (freq, dur, vol = 0.15, wave = 'sine', delay = 0) => {
-          setTimeout(() => {
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.connect(g);
-            g.connect(audioCtx.destination);
-            o.frequency.value = freq;
-            o.type = wave;
-            g.gain.setValueAtTime(vol, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
-            o.start();
-            o.stop(audioCtx.currentTime + dur);
-          }, delay);
-        };
-        
-        if (type === 'paint') {
-          beep(350, 0.25, 0.15, 'sine');
-        } else if (type === 'reaction') {
-          beep(700, 0.3, 0.18, 'triangle');
-          beep(900, 0.3, 0.18, 'triangle', 100);
-        } else if (type === 'victory') {
-          [523, 659, 784, 1047].forEach((f, i) => beep(f, 0.3, 0.15, 'triangle', i * 150));
-        } else if (type === 'error') {
-          beep(220, 0.2, 0.15, 'sawtooth');
-          beep(180, 0.3, 0.15, 'sawtooth', 150);
-        } else if (type === 'fanfare') {
-          // 더 박진감 있는 팡파레
-          beep(523, 0.15, 0.2, 'triangle', 0);
-          beep(659, 0.15, 0.2, 'triangle', 120);
-          beep(784, 0.15, 0.2, 'triangle', 240);
-          beep(1047, 0.4, 0.25, 'triangle', 360);
-          beep(784, 0.15, 0.18, 'triangle', 700);
-          beep(1047, 0.6, 0.25, 'triangle', 850);
+        switch (type) {
+          case 'brush':
+          case 'paint':
+            // 붓 터치: 부드러운 노이즈 + 낮은 톤
+            noise(0.15, 0.08, 800);
+            tone(280, 0.12, 0.1, 'sine', 0, 220);
+            break;
+            
+          case 'letterComplete':
+            // 글자 완성: 만족스러운 상승음 (도-미-솔)
+            tone(523, 0.1, 0.12, 'triangle', 0);    // 도
+            tone(659, 0.1, 0.12, 'triangle', 80);   // 미
+            tone(784, 0.18, 0.15, 'triangle', 160); // 솔 (좀 더 길게)
+            break;
+            
+          case 'sponge':
+            // 스폰지 찍기 (빈 칸): 물기 있는 톡 소리
+            noise(0.2, 0.12, 1500);
+            tone(180, 0.08, 0.08, 'sine', 0, 120);
+            break;
+            
+          case 'reaction':
+            // 화학 반응 (글자 발견): 지글거림 + 띵!
+            // 지글지글 노이즈 (먼저)
+            noise(0.3, 0.1, 2500);
+            // 띵! (반응 발견 알림)
+            tone(800, 0.12, 0.15, 'triangle', 150);
+            tone(1200, 0.2, 0.18, 'triangle', 250);
+            tone(1600, 0.25, 0.12, 'sine', 350);
+            break;
+            
+          case 'bonus':
+            // 한 번 더! 짧고 경쾌한 음
+            tone(880, 0.08, 0.12, 'triangle', 0);
+            tone(1320, 0.15, 0.15, 'triangle', 80);
+            break;
+            
+          case 'turn':
+            // 턴 변경: 부드러운 알림 (도-솔)
+            tone(523, 0.12, 0.08, 'sine', 0);
+            tone(784, 0.18, 0.1, 'sine', 100);
+            break;
+            
+          case 'coin':
+            // 동전 돌아가는 소리: 점점 빨라지는 톤들
+            for (let i = 0; i < 12; i++) {
+              const freq = 600 + Math.random() * 400;
+              tone(freq, 0.05, 0.08, 'square', i * 60);
+            }
+            // 결정 순간 강조음
+            tone(880, 0.2, 0.15, 'triangle', 750);
+            tone(1100, 0.3, 0.12, 'triangle', 900);
+            break;
+            
+          case 'start':
+            // 게임 시작: 호각 같은 신호음
+            tone(700, 0.1, 0.12, 'square', 0);
+            tone(900, 0.2, 0.15, 'square', 100);
+            break;
+            
+          case 'cancel':
+            // 취소/뒤로: 짧은 하강음
+            tone(400, 0.1, 0.1, 'sine', 0, 250);
+            break;
+            
+          case 'error':
+            // 잘못된 동작: 낮고 거친 소리
+            tone(180, 0.15, 0.12, 'sawtooth', 0);
+            tone(140, 0.25, 0.1, 'sawtooth', 120);
+            break;
+            
+          case 'victory':
+          case 'fanfare':
+            // 승리 팡파레: 화려한 상승 + 강조
+            // 첫 번째 상승 (도-미-솔-도)
+            tone(523, 0.12, 0.15, 'triangle', 0);
+            tone(659, 0.12, 0.15, 'triangle', 130);
+            tone(784, 0.12, 0.15, 'triangle', 260);
+            tone(1047, 0.3, 0.18, 'triangle', 390);
+            
+            // 화음 강조 (도-미-솔 동시)
+            tone(523, 0.4, 0.1, 'triangle', 750);
+            tone(659, 0.4, 0.1, 'triangle', 750);
+            tone(784, 0.4, 0.12, 'triangle', 750);
+            
+            // 마지막 하이라이트
+            tone(1047, 0.15, 0.12, 'triangle', 1200);
+            tone(1319, 0.5, 0.18, 'triangle', 1350);
+            break;
+            
+          case 'firework':
+            // 폭죽 터지는 소리
+            noise(0.4, 0.15, 3000);
+            tone(1500, 0.08, 0.1, 'triangle', 30);
+            tone(2000, 0.06, 0.08, 'triangle', 80);
+            break;
         }
       } catch (e) {}
     }
